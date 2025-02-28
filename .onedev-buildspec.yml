@@ -1,0 +1,31 @@
+version: 38
+jobs:
+- name: Build and Publish
+  steps:
+  - !CheckoutStep
+    name: Checkout
+    cloneCredential: !DefaultCredential {}
+    withLfs: false
+    withSubmodules: false
+    condition: ALL_PREVIOUS_STEPS_WERE_SUCCESSFUL
+  - !BuildImageStep
+    name: Build
+    output: !RegistryOutput
+      tags: onedev.mperals.work/mapeca/warp-proxy
+    registryLogins:
+    - registryUrl: '@server_url@'
+      userName: '@job_token@'
+      passwordSecret: registry-access-token
+    condition: ALL_PREVIOUS_STEPS_WERE_SUCCESSFUL
+  - !PushRepository
+    name: Github Sync
+    remoteUrl: https://github.com/mapeca/warp-proxy
+    passwordSecret: github-mirror-access-token
+    force: false
+    condition: ALL_PREVIOUS_STEPS_WERE_SUCCESSFUL
+  triggers:
+  - !BranchUpdateTrigger {}
+  retryCondition: never
+  maxRetries: 3
+  retryDelay: 30
+  timeout: 3600
