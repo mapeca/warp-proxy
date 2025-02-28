@@ -20,4 +20,7 @@ RUN mkdir -p $HOME/.local/share/warp && echo "yes" > $HOME/.local/share/warp/acc
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
+# Indicate default port
+EXPOSE 40000
+
 ENTRYPOINT ["/entrypoint.sh"]
